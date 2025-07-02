@@ -5,6 +5,7 @@ from google.oauth2 import service_account
 from googleapiclient.discovery import build
 from googleapiclient.http import MediaFileUpload
 import os
+import json
 import psycopg2
 
 app = FastAPI()
@@ -12,35 +13,36 @@ app = FastAPI()
 # CORS configuración
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://192.168.0.9:5173"],  # Cambia si tu frontend estará en otro lado
+    allow_origins=["http://192.168.0.9:5173"],  # Cambia por la IP o dominio de tu frontend
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
-# Configuración PostgreSQL (Railway)
+# Configuración PostgreSQL usando variables de entorno
 conn = psycopg2.connect(
-    dbname='postgres',
-    user='postgres',
-    password='zxYWPzIoxdRrBlNKwrgheRjASewasWjR',
-    host='metro.proxy.rlwy.net',
-    port='30456'
+    dbname=os.getenv("DB_NAME", "postgres"),
+    user=os.getenv("DB_USER", "postgres"),
+    password=os.getenv("DB_PASSWORD"),
+    host=os.getenv("DB_HOST"),
+    port=os.getenv("DB_PORT", "5432")
 )
-
 cursor = conn.cursor()
 
-# Google Drive configuración
-SERVICE_ACCOUNT_FILE = 'credenciales.json'
+# Google Drive configuración desde variable de entorno
 SCOPES = ['https://www.googleapis.com/auth/drive']
-FOLDER_ID = '1dQ6cDyZPwWQnsdsHrAnsSRvzjEtPRD40'
+FOLDER_ID = os.getenv("FOLDER_ID")
 
-credentials = service_account.Credentials.from_service_account_file(
-    SERVICE_ACCOUNT_FILE, scopes=SCOPES
+credenciales_dict = json.loads(os.getenv("GOOGLE_CREDENTIALS_JSON"))
+
+credentials = service_account.Credentials.from_service_account_info(
+    credenciales_dict, scopes=SCOPES
 )
 drive_service = build('drive', 'v3', credentials=credentials)
 
 # Carpeta temporal local
 os.makedirs("documentos", exist_ok=True)
+
 
 @app.post("/subir-pdf")
 async def subir_pdf(cedula: str = Form(...), nombres: str = Form(...), file: UploadFile = None):
@@ -78,7 +80,7 @@ async def subir_pdf(cedula: str = Form(...), nombres: str = Form(...), file: Upl
 
         url_drive = f"https://drive.google.com/file/d/{file_id}/view"
 
-        # Guardar en la base de datos PostgreSQL
+        # Guardar en la base de datos
         cursor.execute(
             "INSERT INTO documentos_firmados (cedula, nombres, ruta_pdf, fecha_registro) VALUES (%s, %s, %s, CURRENT_TIMESTAMP)",
             (cedula, nombres, url_drive)
@@ -91,7 +93,8 @@ async def subir_pdf(cedula: str = Form(...), nombres: str = Form(...), file: Upl
         conn.rollback()
         print(f"⚠️ Error detallado: {e}")
         return JSONResponse(content={"error": str(e)}, status_code=500)
-    
+
+
 @app.get("/documentos")
 async def listar_documentos():
     try:
@@ -105,7 +108,7 @@ async def listar_documentos():
                 "cedula": fila[1],
                 "nombres": fila[2],
                 "ruta_pdf": fila[3],
-                "fecha_registro": str(fila[4])  # Convertimos la fecha a string por compatibilidad
+                "fecha_registro": str(fila[4])
             })
 
         return documentos
