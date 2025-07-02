@@ -5,30 +5,28 @@ from google.oauth2 import service_account
 from googleapiclient.discovery import build
 from googleapiclient.http import MediaFileUpload
 import os
-import pyodbc
+import psycopg2
 
 app = FastAPI()
 
 # CORS configuración
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://192.168.0.9:5173"],
+    allow_origins=["http://192.168.0.9:5173"],  # Cambia si tu frontend estará en otro lado
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
-# Configuración SQL Server
-server = 'DESKTOP-SO7UMP1\\SQLEXPRESS'
-database = 'Voltaren'
-conn_str = (
-    f'DRIVER={{ODBC Driver 17 for SQL Server}};'
-    f'SERVER={server};'
-    f'DATABASE={database};'
-    'Trusted_Connection=yes;'
-    'TrustServerCertificate=yes;'
+# Configuración PostgreSQL (Railway)
+conn = psycopg2.connect(
+    dbname='postgres',
+    user='postgres',
+    password='zxYWPzIoxdRrBlNKwrgheRjASewasWjR',
+    host='metro.proxy.rlwy.net',
+    port='30456'
 )
-conn = pyodbc.connect(conn_str)
+
 cursor = conn.cursor()
 
 # Google Drive configuración
@@ -80,10 +78,10 @@ async def subir_pdf(cedula: str = Form(...), nombres: str = Form(...), file: Upl
 
         url_drive = f"https://drive.google.com/file/d/{file_id}/view"
 
-        # Guardar en la base de datos
+        # Guardar en la base de datos PostgreSQL
         cursor.execute(
-            "INSERT INTO documentos_firmados (cedula, nombres, ruta_pdf) VALUES (?, ?, ?)",
-            cedula, nombres, url_drive
+            "INSERT INTO documentos_firmados (cedula, nombres, ruta_pdf, fecha_registro) VALUES (%s, %s, %s, CURRENT_TIMESTAMP)",
+            (cedula, nombres, url_drive)
         )
         conn.commit()
 
@@ -91,5 +89,27 @@ async def subir_pdf(cedula: str = Form(...), nombres: str = Form(...), file: Upl
 
     except Exception as e:
         conn.rollback()
+        print(f"⚠️ Error detallado: {e}")
+        return JSONResponse(content={"error": str(e)}, status_code=500)
+    
+@app.get("/documentos")
+async def listar_documentos():
+    try:
+        cursor.execute("SELECT id, cedula, nombres, ruta_pdf, fecha_registro FROM documentos_firmados ORDER BY id DESC")
+        filas = cursor.fetchall()
+
+        documentos = []
+        for fila in filas:
+            documentos.append({
+                "id": fila[0],
+                "cedula": fila[1],
+                "nombres": fila[2],
+                "ruta_pdf": fila[3],
+                "fecha_registro": str(fila[4])  # Convertimos la fecha a string por compatibilidad
+            })
+
+        return documentos
+
+    except Exception as e:
         print(f"⚠️ Error detallado: {e}")
         return JSONResponse(content={"error": str(e)}, status_code=500)

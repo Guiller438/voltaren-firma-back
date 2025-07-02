@@ -1,0 +1,13 @@
+{
+  "type": "service_account",
+  "project_id": "voltarendrive",
+  "private_key_id": "e1be10937544bc89e9be6af270770cc06e5febc2",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQDzH/17cegGsoFo\nCiMZB9/T0f5I7wXr5UgnBhViDqOQcbRPp5GrjRJhhQS4v9FTAzHcnH1xHaNKZaF8\nPowKFq82VlKWYa8KOkVVicPlAvpJhl1XiQVq1Fsl4WsZ2UNYSOqIUSopHnnj6Mju\n4mtRFGGU8CIZRXVcwyij7Yi8MJtH+B5WVOhG8y0+s23erzLlIj7WT0yvA+fNeFqp\nCduYTYNtYHIYyFxjzMEcEOZL1ryVsJ41rNx9w9j91lem6zeF0XHgdw7KEMwSFVjN\nubMSx9j16oV/yR243Ee0YzpkcFVlHnD+2gI4jtkzFU6udwnFQI90vk+x3JZ2JNFa\nDrYpyZJZAgMBAAECggEANJMKYZN0NV6MlU774AHP6SJT9rmZcjWWsLmkDhxUSnwM\nHd2CprJO8z+skbcJMQZT1f0RM1DRatknXpK3/caCBSINoe9lxrRrIeA0uGU4coXX\n0YIT5dIeE8b3PhO5eHHsJaZHk7S/bwV7zgywYEwj/e0fso9OncymESzgkLGCIsGd\nAw4W1QTTwTjWY3ZQbbjzuZ68EdYHd+01a5LahghQC3Nrce1jQaqMA3AxfO4ZrvYG\nnWb7GFqS/fqGp1kCtWrT1J6NhznV/fBRUMTbrlaPhCWhHtVfpSUyP6/FuKwrCfAC\nVp1gPCuRtT7P4IlN/WjsYsCA+Uq4coYzcqnmKMOBwQKBgQD+I7KAxCyOZ2Zas83F\nwIMMq8rBfwJ6rkra7NKVz+aloaI6TehQnlmMNo2fA2bVB4RmaIHRXcuGAxXBTjS1\nc1uUeBGXSfVm0hFdBandtfWDKjwQ3vWGsONraV8LcFnKkYjuiwV9vWkNju5YCxaZ\nABTni8CDvSNgiLEGyQB1wUKcBQKBgQD056ZYIvjAZxQAFjPxlgmaBcSH/3wFCf6n\nPqGqoo+nLN0XQNpRAkGb+AGiz1hNV/ySx+/bhVBXvQTbY3wpOgdKvWXKDlEPIED6\n95EEfMpIBKuK39w3P2BpwK74GpDgHy4bg4PBzDixQN0+LrxNrWsQQJ7uPqVhnpL4\nSdwp9guBRQKBgQD8rHNCcUk3gHiUf6Z8Ec5536fkQCov3XBRQBqTlrPkQ9Lukx0C\nYp33uRmPWqt37FRoGUnQ5qd+ozyTB/WB3qLT95jNyVuzEfLvgL0F0W67LVexEmwc\nsWw7E/XKgrbTn2T8fr5D6Pk04MH6SXP7RMiD+j+6+2bcCKuxalEJws8+HQKBgDKt\nEG2iZuihK7FM5tixnDEDyoP9qLL+O3Rt8FP3qVQFY4ZhRAuJNPxKGESRNQtkDn5s\n4sQA1Pwiv7OJ5XI+cK3VfQ+PYNSJbwi/W4GbNNwsIzbsVYwVECUx2sK59Ip7yTWm\nRAhA8uYyrtUkJJDKNqI5TOmtitklT/ISjn0cTYslAoGBALOMgmkolFp12BoLZ0Mk\nCDYbWDcow1p+rmHErNlOf+ZqOzIYIxSrTcVwT8lbnrbAgkfRgZoz/wJN+cYNkK/e\nA2BV6T6aMZtVV+Pf++JrBNkX2lRLnSrBuTKy21xG5kMQO8PojWmG7shrYfSTjhNa\nne2Rt+LciQU02i+vqF2g9osw\n-----END PRIVATE KEY-----\n",
+  "client_email": "voltaren-uploader@voltarendrive.iam.gserviceaccount.com",
+  "client_id": "109012845208847955637",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/voltaren-uploader%40voltarendrive.iam.gserviceaccount.com",
+  "universe_domain": "googleapis.com"
+}
