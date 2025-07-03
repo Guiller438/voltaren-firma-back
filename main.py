@@ -5,47 +5,55 @@ from google.oauth2 import service_account
 from googleapiclient.discovery import build
 from googleapiclient.http import MediaFileUpload
 import os
-import json
 import psycopg2
+import json
 
 app = FastAPI()
 
 # CORS configuración
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://192.168.0.9:5173"],  # Cambia por la IP o dominio de tu frontend
+    allow_origins=["http://192.168.0.9:5173"],  # Cambia esta IP por la de tu frontend en producción
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
-# Configuración PostgreSQL usando variables de entorno
+# Configuración PostgreSQL
 conn = psycopg2.connect(
-    dbname=os.getenv("DB_NAME", "postgres"),
-    user=os.getenv("DB_USER", "postgres"),
-    password=os.getenv("DB_PASSWORD"),
-    host=os.getenv("DB_HOST"),
-    port=os.getenv("DB_PORT", "5432")
+    dbname='postgres',
+    user='postgres',
+    password='zxYWPzIoxdRrBlNKwrgheRjASewasWjR',  # Reemplaza por variable de entorno en producción
+    host='metro.proxy.rlwy.net',
+    port='30456'
 )
 cursor = conn.cursor()
 
-# Google Drive configuración desde variable de entorno
+# Google Drive configuración usando variable de entorno
 SCOPES = ['https://www.googleapis.com/auth/drive']
-FOLDER_ID = os.getenv("FOLDER_ID")
+FOLDER_ID = '1Xj4_3dMn5pPwTCC5E2LPL2_9lyz3uQLH'  # Asegúrate de que esta carpeta exista en tu Drive
 
-credenciales_dict = json.loads(os.getenv("GOOGLE_CREDENTIALS_JSON"))
+# Leer credenciales desde variable de entorno
+google_credentials_json = os.environ.get('GOOGLE_CREDENTIALS')
 
-credentials = service_account.Credentials.from_service_account_info(
-    credenciales_dict, scopes=SCOPES
-)
+if not google_credentials_json:
+    raise Exception("🚨 No se encontró la variable GOOGLE_CREDENTIALS en el entorno")
+
+credentials_dict = json.loads(google_credentials_json)
+credentials = service_account.Credentials.from_service_account_info(credentials_dict, scopes=SCOPES)
+
 drive_service = build('drive', 'v3', credentials=credentials)
 
 # Carpeta temporal local
 os.makedirs("documentos", exist_ok=True)
 
-
 @app.post("/subir-pdf")
-async def subir_pdf(cedula: str = Form(...), nombres: str = Form(...), file: UploadFile = None):
+async def subir_pdf(
+    cedula: str = Form(...),
+    nombres: str = Form(...),
+    contacto: str = Form(...),
+    file: UploadFile = None
+):
     try:
         if not file:
             return JSONResponse(content={"error": "No se envió el archivo PDF"}, status_code=400)
@@ -82,10 +90,16 @@ async def subir_pdf(cedula: str = Form(...), nombres: str = Form(...), file: Upl
 
         # Guardar en la base de datos
         cursor.execute(
-            "INSERT INTO documentos_firmados (cedula, nombres, ruta_pdf, fecha_registro) VALUES (%s, %s, %s, CURRENT_TIMESTAMP)",
-            (cedula, nombres, url_drive)
+            """
+            INSERT INTO documentos_firmados (cedula, nombres, ruta_pdf, fecha_registro, contacto)
+            VALUES (%s, %s, %s, CURRENT_TIMESTAMP, %s)
+            """,
+            (cedula, nombres, url_drive, contacto)
         )
         conn.commit()
+
+        # Eliminar el archivo temporal
+        os.remove(ruta_temp)
 
         return {"mensaje": "Documento subido y guardado exitosamente", "url": url_drive}
 
@@ -98,7 +112,11 @@ async def subir_pdf(cedula: str = Form(...), nombres: str = Form(...), file: Upl
 @app.get("/documentos")
 async def listar_documentos():
     try:
-        cursor.execute("SELECT id, cedula, nombres, ruta_pdf, fecha_registro FROM documentos_firmados ORDER BY id DESC")
+        cursor.execute("""
+            SELECT id, cedula, nombres, ruta_pdf, fecha_registro, contacto
+            FROM documentos_firmados
+            ORDER BY id DESC
+        """)
         filas = cursor.fetchall()
 
         documentos = []
@@ -108,7 +126,8 @@ async def listar_documentos():
                 "cedula": fila[1],
                 "nombres": fila[2],
                 "ruta_pdf": fila[3],
-                "fecha_registro": str(fila[4])
+                "fecha_registro": str(fila[4]),
+                "contacto": fila[5]
             })
 
         return documentos
