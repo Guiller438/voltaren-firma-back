@@ -37,7 +37,7 @@ cursor = conn.cursor()
 
 # Google Drive configuración usando variable de entorno
 SCOPES = ['https://www.googleapis.com/auth/drive']
-FOLDER_ID = '1Xj4_3dMn5pPwTCC5E2LPL2_9lyz3uQLH'  # Asegúrate de que esta carpeta exista en tu Drive
+FOLDER_ID = '19J-DuhWgbGyM_LpOQIjpOMF39p0umw_0'  # Asegúrate de que esta carpeta exista en tu Drive
 
 # Leer credenciales desde variable de entorno
 google_credentials_json = os.environ.get('GOOGLE_CREDENTIALS')
