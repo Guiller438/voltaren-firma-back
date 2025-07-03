@@ -10,13 +10,19 @@ import json
 
 app = FastAPI()
 
-# CORS configuración
+# Configura los orígenes permitidos
+origins = [
+    "http://localhost:5173",  # Para desarrollo local de React
+    "https://voltaren-firma.netlify.app",  # Si más adelante lo subes a Netlify o similar
+    "https://voltaren-firma-back.onrender.com"  # El propio backend, opcionalmente
+]
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://192.168.0.9:5173"],  # Cambia esta IP por la de tu frontend en producción
+    allow_origins=origins,  # Lista de orígenes permitidos
     allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
+    allow_methods=["*"],  # Permite todos los métodos (GET, POST, etc.)
+    allow_headers=["*"],  # Permite todos los headers
 )
 
 # Configuración PostgreSQL
