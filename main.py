@@ -13,7 +13,7 @@ app = FastAPI()
 # Configura los orígenes permitidos
 origins = [
     "http://localhost:5173",  # Para desarrollo local de React
-    "https://voltaren-firma.netlify.app",  # Si más adelante lo subes a Netlify o similar
+    "https://voltarenfirma.netlify.app",  # Si más adelante lo subes a Netlify o similar
     "https://voltaren-firma-back.onrender.com"  # El propio backend, opcionalmente
 ]
 
